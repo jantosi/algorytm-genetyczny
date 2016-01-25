@@ -13,12 +13,31 @@ import java.util.Random;
  */
 public class NumberIndividual implements Individual<NumberIndividual> {
 
+    private final double minRange;
+    private final double maxRange;
+    private final int ranges;
+
     private BitSetMapper<DoubleWrapper> bitSetMapper;
 
+    public NumberIndividual(double minRange, double maxRange, int ranges) {
+        this.minRange = minRange;
+        this.maxRange = maxRange;
+        this.ranges = ranges;
+        BitSetMapper<DoubleWrapper> mapper = new BitSetMapper<>(
+                new DoubleWrapper(minRange),
+                new DoubleWrapper(maxRange),
+                ranges
+        );
+        this.setBitSetMapper(mapper);
+    }
+
+
+    @Override
     public BitSet getGenes() {
         return bitSetMapper.getMappedBitSet();
     }
 
+    @Override
     public void setGenes(BitSet genes) {
         bitSetMapper.setMappedBitSet(genes);
     }
@@ -56,9 +75,9 @@ public class NumberIndividual implements Individual<NumberIndividual> {
             resultB.set(i, selfB.get(i));
         }
 
-        NumberIndividual a = new NumberIndividual();
+        NumberIndividual a = new NumberIndividual(minRange, maxRange, ranges);
         a.setGenes(resultA);
-        NumberIndividual b = new NumberIndividual();
+        NumberIndividual b = new NumberIndividual(minRange, maxRange, ranges);
         b.setGenes(resultB);
 
         ArrayList<Individual> individuals = new ArrayList<>();
@@ -76,6 +95,7 @@ public class NumberIndividual implements Individual<NumberIndividual> {
         this.bitSetMapper = bitSetMapper;
     }
 
+    @Override
     public BitSetMapper<DoubleWrapper> getBitSetMapper() {
         return bitSetMapper;
     }

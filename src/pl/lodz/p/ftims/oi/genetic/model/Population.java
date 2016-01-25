@@ -26,7 +26,6 @@ public class Population<T extends Individual> {
         );
 
         for (T individual : individuals) {
-            System.out.println("+");
             result.put(individual, fitnessFunction.apply(individual));
         }
 
