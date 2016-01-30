@@ -1,6 +1,7 @@
 package pl.lodz.p.ftims.oi.genetic.model;
 
 import pl.lodz.p.ftims.oi.genetic.BitSetMapper;
+import pl.lodz.p.ftims.oi.genetic.Utils;
 import pl.lodz.p.ftims.oi.genetic.types.DoubleWrapper;
 
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class NumberIndividual implements Individual<NumberIndividual> {
 
     @Override
     public void mutate(double mutationProbability) {
-        for (int i = 0; i < bitSetMapper.getMappedBitSet().size(); i++) {
+        for (int i = 0; i < bitSetMapper.getMappedBitSet().length(); i++) {
             Random random = new Random();
             if (random.nextDouble() <= mutationProbability) {
                 bitSetMapper.getMappedBitSet().flip(i);
@@ -55,22 +56,30 @@ public class NumberIndividual implements Individual<NumberIndividual> {
     @Override
     public List<Individual> cross(NumberIndividual other) {
 
-        int crossingPoint = new Random().nextInt(Double.SIZE - 1);
+        int crossingPoint = new Random().nextInt(bitSetMapper.getBits() - 1);
 
         BitSet selfA = bitSetMapper.getMappedBitSet().get(0, crossingPoint);
-        BitSet selfB = bitSetMapper.getMappedBitSet().get(crossingPoint, bitSetMapper.getMappedBitSet().size());
+        BitSet selfB = Utils.shiftLeft(
+                bitSetMapper.getMappedBitSet().get(crossingPoint, bitSetMapper.getBits()),
+                bitSetMapper.getBits(),
+                crossingPoint
+        );
 
         BitSet otherA = other.bitSetMapper.getMappedBitSet().get(0, crossingPoint);
-        BitSet otherB = other.bitSetMapper.getMappedBitSet().get(crossingPoint, other.bitSetMapper.getMappedBitSet().size());
+        BitSet otherB = Utils.shiftLeft(
+                other.bitSetMapper.getMappedBitSet().get(crossingPoint, other.bitSetMapper.getBits()),
+                bitSetMapper.getBits(),
+                crossingPoint
+        );
 
-        BitSet resultA = new BitSet(Double.SIZE);
-        BitSet resultB = new BitSet(Double.SIZE);
+        BitSet resultA = new BitSet(bitSetMapper.getBits());
+        BitSet resultB = new BitSet(bitSetMapper.getBits());
 
         for (int i = 0; i < crossingPoint; i++) {
             resultA.set(i, selfA.get(i));
             resultB.set(i, otherA.get(i));
         }
-        for (int i = crossingPoint; i < Double.SIZE; i++) {
+        for (int i = crossingPoint; i < bitSetMapper.getBits(); i++) {
             resultA.set(i, otherB.get(i));
             resultB.set(i, selfB.get(i));
         }

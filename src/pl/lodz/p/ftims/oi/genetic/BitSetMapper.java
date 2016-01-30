@@ -21,6 +21,8 @@ public class BitSetMapper<T extends Subtractable<T> & Dividable<T> & Summable<T>
     private BitSet mappedBitSet;
     private long longValue;
 
+    private int bits;
+
     public BitSetMapper(T min, T max, int parts){
         this.min = min;
         this.max = max;
@@ -28,7 +30,14 @@ public class BitSetMapper<T extends Subtractable<T> & Dividable<T> & Summable<T>
 
         singlePartSize = max.subtract(min).divide(parts);
 
-        mappedBitSet = new BitSet(parts);
+        int bits=1;
+        int t=1;
+        while(t<parts){
+            t=t<<1;
+            bits++;
+        }
+        this.bits = bits;
+        mappedBitSet = new BitSet(bits);
         tClass = (Class<T>) min.getClass();
     }
 
@@ -36,9 +45,10 @@ public class BitSetMapper<T extends Subtractable<T> & Dividable<T> & Summable<T>
         T tmp = min;
         long bitSetRawValue = convert(mappedBitSet);
 
-        if(tClass.isAssignableFrom(Mulipliable.class)){
-            Mulipliable<T> tmp1 = (Mulipliable) tmp;
-            tmp = tmp1.multiply(bitSetRawValue);
+        if(Mulipliable.class.isAssignableFrom(tClass)){
+            Mulipliable<T> sps = (Mulipliable) singlePartSize;
+            T multiplied = sps.multiply(bitSetRawValue);
+            tmp = tmp.sum(multiplied);
         }
         else{
             for (long i = 0; i < bitSetRawValue; i++) {
@@ -67,6 +77,10 @@ public class BitSetMapper<T extends Subtractable<T> & Dividable<T> & Summable<T>
 
     public T getMin() {
         return min;
+    }
+
+    public int getBits() {
+        return bits;
     }
 
     private static long convert(BitSet bits) {

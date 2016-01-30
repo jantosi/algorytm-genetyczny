@@ -1,16 +1,15 @@
 package pl.lodz.p.ftims.oi.genetic.model;
 
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import pl.lodz.p.ftims.oi.genetic.types.DoubleWrapper;
+
+import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Created by Kuba on 2016-01-18.
  */
 public class Population<T extends Individual> {
+
     private List<T> individuals;
 
     private Function<T, Double> fitnessFunction;
@@ -20,18 +19,8 @@ public class Population<T extends Individual> {
         this.fitnessFunction = fitnessFunction;
     }
 
-    public SortedMap<T, Double> byFitness(){
-        TreeMap<T, Double> result = new TreeMap<T, Double>(
-                (a, b) -> fitnessFunction.apply(a).compareTo(fitnessFunction.apply(b))
-        );
-
-        for (T individual : individuals) {
-            result.put(individual, fitnessFunction.apply(individual));
-        }
-
-//        Map<T, Double> collect = individuals.stream().collect(Collectors.toMap($ -> $, $ -> fitnessFunction.apply($)));
-//
-//        result.putAll(collect);
-        return result;
+    public List<T> byFitness(){
+        individuals.sort((a, b) -> fitnessFunction.apply(a).compareTo(fitnessFunction.apply(b)));
+        return individuals;
     }
 }
